@@ -26,6 +26,7 @@ import { MissionEventsDrawer } from './components/MissionEventsDrawer';
 import { DataLineageModal } from './components/DataLineageModal';
 import { DemoTourModal } from './components/DemoTourModal';
 import { PodDetailModal } from './components/PodDetailModal';
+import { MobileTwinView } from './components/MobileTwinView';
 import {
   Maximize2,
   Minimize2,
@@ -160,94 +161,119 @@ export function App() {
         />
       ) : (
         /* 3D DIGITAL TWIN & INTEGRATED CONSOLE VIEW */
-        <div className="relative flex-1 w-full h-full overflow-hidden">
-          {/* Central 3D Visualizer Canvas */}
-          <div className="absolute inset-0 z-0">
-            <Station3DView
-              stationId={stationState.activeStation}
-              isBlizzard={isBlizzard}
-              stationHealth={currentStation.stationHealthPct}
-              statusPower={currentStation.power.generators.some(g => g.status === 'critical') ? 'critical' : currentStation.power.generators.some(g => g.status === 'warning') ? 'warning' : 'nominal'}
-              statusHabitation={currentStation.lifeSupport.status}
-              statusFuel={currentStation.logistics.fuelStatus}
-              statusWater={currentStation.lifeSupport.status}
-              selectedPod={selectedPod ? selectedPod.id : null}
-              isLightMode={isLightMode}
-              onSelectPod={(podId) => {
-                const pod = currentStation.pods.find((p) =>
-                  p.id === podId ||
-                  p.id.includes(podId) ||
-                  podId.includes(p.id.replace('pod-', '')) ||
-                  (podId === 'power' && p.id === 'pod-pwr') ||
-                  (podId === 'habitation' && p.id === 'pod-hab') ||
-                  (podId === 'science' && p.id === 'pod-lab') ||
-                  (podId === 'water' && p.id === 'pod-lif') ||
-                  (podId === 'fuel' && p.id === 'pod-lif')
-                ) || currentStation.pods[0];
-                setSelectedPod(pod);
-              }}
-            />
-          </div>
-
-          {/* 3D Stage Overlays & Hud Indicators */}
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 pointer-events-none text-center">
-            <div className="inline-flex items-center gap-2.5 bg-white/85 dark:bg-slate-900/85 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800/80 px-4 py-1.5 rounded-full text-xs font-medium shadow-md">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="font-semibold text-slate-800 dark:text-slate-100">
-                {currentStation.config.name} • 3D Digital Twin
-              </span>
-              <span className="text-slate-300 dark:text-slate-600">•</span>
-              <span className="text-[11px] text-slate-500 dark:text-slate-400 font-sans">
-                134 Stilt-Elevated Modular Units
-              </span>
+        <>
+          {/* DESKTOP VIEW (MD & ABOVE): DUAL FLOATING PANELS OVER 3D VISUALIZER */}
+          <div className="hidden md:block relative flex-1 w-full h-full overflow-hidden">
+            {/* Central 3D Visualizer Canvas */}
+            <div className="absolute inset-0 z-0">
+              <Station3DView
+                stationId={stationState.activeStation}
+                isBlizzard={isBlizzard}
+                stationHealth={currentStation.stationHealthPct}
+                statusPower={currentStation.power.generators.some(g => g.status === 'critical') ? 'critical' : currentStation.power.generators.some(g => g.status === 'warning') ? 'warning' : 'nominal'}
+                statusHabitation={currentStation.lifeSupport.status}
+                statusFuel={currentStation.logistics.fuelStatus}
+                statusWater={currentStation.lifeSupport.status}
+                selectedPod={selectedPod ? selectedPod.id : null}
+                isLightMode={isLightMode}
+                onSelectPod={(podId) => {
+                  const pod = currentStation.pods.find((p) =>
+                    p.id === podId ||
+                    p.id.includes(podId) ||
+                    podId.includes(p.id.replace('pod-', '')) ||
+                    (podId === 'power' && p.id === 'pod-pwr') ||
+                    (podId === 'habitation' && p.id === 'pod-hab') ||
+                    (podId === 'science' && p.id === 'pod-lab') ||
+                    (podId === 'water' && p.id === 'pod-lif') ||
+                    (podId === 'fuel' && p.id === 'pod-lif')
+                  ) || currentStation.pods[0];
+                  setSelectedPod(pod);
+                }}
+              />
             </div>
 
-            {/* Emergency Crisis Banner if blizzard is running */}
-            {isBlizzard && (
-              <div className="mt-2 bg-rose-500/90 text-white backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-semibold shadow-lg shadow-rose-500/25 flex items-center justify-center gap-2 pointer-events-auto animate-pulse">
-                <AlertTriangle className="w-4 h-4 text-amber-200" />
-                <span>Category 4 Polar Blizzard Active (112 km/h • Wind chill -43°C)</span>
-                <button
-                  onClick={() => setIsCascadingRiskOpen(true)}
-                  className="bg-white/20 hover:bg-white/30 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full ml-1 uppercase transition"
-                >
-                  Inspect Risk Chain
-                </button>
+            {/* 3D Stage Overlays & Hud Indicators */}
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 pointer-events-none text-center">
+              <div className="inline-flex items-center gap-2.5 bg-white/85 dark:bg-slate-900/85 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800/80 px-4 py-1.5 rounded-full text-xs font-medium shadow-md">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="font-semibold text-slate-800 dark:text-slate-100">
+                  {currentStation.config.name} • 3D Digital Twin
+                </span>
+                <span className="text-slate-300 dark:text-slate-600">•</span>
+                <span className="text-[11px] text-slate-500 dark:text-slate-400 font-sans">
+                  134 Stilt-Elevated Modular Units
+                </span>
               </div>
-            )}
-          </div>
 
-          {/* Interactive 3D Controls hint badge (Bottom Center) */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 pointer-events-none hidden md:block">
-            <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 text-[11px] text-slate-600 dark:text-slate-400 px-4 py-1.5 rounded-full font-sans shadow-sm">
-              Left-click to orbit • Scroll to zoom • Right-click to pan • Select any pod for diagnostics
+              {/* Emergency Crisis Banner if blizzard is running */}
+              {isBlizzard && (
+                <div className="mt-2 bg-rose-500/90 text-white backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-semibold shadow-lg shadow-rose-500/25 flex items-center justify-center gap-2 pointer-events-auto animate-pulse">
+                  <AlertTriangle className="w-4 h-4 text-amber-200" />
+                  <span>Category 4 Polar Blizzard Active (112 km/h • Wind chill -43°C)</span>
+                  <button
+                    onClick={() => setIsCascadingRiskOpen(true)}
+                    className="bg-white/20 hover:bg-white/30 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full ml-1 uppercase transition"
+                  >
+                    Inspect Risk Chain
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Interactive 3D Controls hint badge (Bottom Center) */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 pointer-events-none hidden md:block">
+              <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 text-[11px] text-slate-600 dark:text-slate-400 px-4 py-1.5 rounded-full font-sans shadow-sm">
+                Left-click to orbit • Scroll to zoom • Right-click to pan • Select any pod for diagnostics
+              </div>
+            </div>
+
+            {/* Left Console Panel (1. LIVE POLAR WEATHER & 4. PREDICTIVE AI ENGINE) */}
+            <div className="absolute top-3 left-3 bottom-3 z-20 pointer-events-auto overflow-y-auto max-h-[calc(100vh-100px)] pr-1 custom-scrollbar">
+              <LeftConsolePanel
+                weather={currentStation.weather}
+                generator2={generator2}
+                isBlizzard={isBlizzard}
+                onOpenExplainability={() => setIsExplainabilityOpen(true)}
+                onSelectGenerator={() => setIsExplainabilityOpen(true)}
+              />
+            </div>
+
+            {/* Right Console Panel (3. LIFE SUPPORT HEALTH & 5. CRISIS SIMULATOR) */}
+            <div className="absolute top-3 right-3 bottom-3 z-20 pointer-events-auto overflow-y-auto max-h-[calc(100vh-100px)] pl-1 custom-scrollbar">
+              <RightConsolePanel
+                lifeSupport={currentStation.lifeSupport}
+                activeScenario={stationState.activeScenario}
+                onRunBlizzard={handleRunBlizzard}
+                onRunGeneratorFailure={handleRunGeneratorFailure}
+                onRunResupplyDelay={handleRunResupplyDelay}
+                onResetSimulation={handleResetSimulation}
+                onOpenWhatIfModal={() => setIsWhatIfOpen(true)}
+              />
             </div>
           </div>
 
-          {/* Left Console Panel (1. LIVE POLAR WEATHER & 4. PREDICTIVE AI ENGINE) */}
-          <div className="absolute top-3 left-3 bottom-3 z-20 pointer-events-auto overflow-y-auto max-h-[calc(100vh-100px)] pr-1 custom-scrollbar">
-            <LeftConsolePanel
-              weather={currentStation.weather}
+          {/* MOBILE VIEW (< MD): ZERO-OVERLAP SEGMENTED DIGITAL TWIN WITH DEDICATED TABS */}
+          <div className="block md:hidden flex-1 w-full h-full overflow-hidden">
+            <MobileTwinView
+              currentStation={currentStation}
               generator2={generator2}
               isBlizzard={isBlizzard}
-              onOpenExplainability={() => setIsExplainabilityOpen(true)}
-              onSelectGenerator={() => setIsExplainabilityOpen(true)}
-            />
-          </div>
-
-          {/* Right Console Panel (3. LIFE SUPPORT HEALTH & 5. CRISIS SIMULATOR) */}
-          <div className="absolute top-3 right-3 bottom-3 z-20 pointer-events-auto overflow-y-auto max-h-[calc(100vh-100px)] pl-1 custom-scrollbar">
-            <RightConsolePanel
-              lifeSupport={currentStation.lifeSupport}
-              activeScenario={stationState.activeScenario}
+              isLightMode={isLightMode}
+              selectedPod={selectedPod}
+              onSelectPod={(pod) => setSelectedPod(pod)}
               onRunBlizzard={handleRunBlizzard}
               onRunGeneratorFailure={handleRunGeneratorFailure}
               onRunResupplyDelay={handleRunResupplyDelay}
               onResetSimulation={handleResetSimulation}
+              onOpenCascadingRisk={() => setIsCascadingRiskOpen(true)}
+              onOpenExplainability={() => setIsExplainabilityOpen(true)}
               onOpenWhatIfModal={() => setIsWhatIfOpen(true)}
+              onOpenLogistics={() => setIsLogisticsOpen(true)}
+              onOpenRecommendation={() => setIsRecommendationOpen(true)}
+              activeScenario={stationState.activeScenario}
             />
           </div>
-        </div>
+        </>
       )}
 
       {/* Bottom Status Bar (MISSION DAY: 147 • CREW: 12 • LAT • LON • ELEVATION • UTC • UPTIME) */}
