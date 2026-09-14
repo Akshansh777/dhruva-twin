@@ -1,0 +1,6 @@
+{
+  "name": "DHRUVA-TWIN: Antarctic Mission Digital Twin",
+  "description": "Smart automation and digital twin command console for Indian Antarctic Research Stations (Bharati & Maitri), featuring predictive anomaly detection, cascading risk engine, and crisis simulation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
